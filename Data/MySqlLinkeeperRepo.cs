@@ -32,6 +32,11 @@ namespace Linkeeper.Data
             return _context.Links.FirstOrDefault(p => p.Id == id);
         }
 
+        public void UpdateLink(Link link)
+        {
+            //nothing
+        }
+
         public bool SaveChanges()
         {
             return _context.SaveChanges() > 0;

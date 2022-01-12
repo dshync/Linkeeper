@@ -55,5 +55,21 @@ namespace Linkeeper.Controllers
 
             return BadRequest();
         }
+
+        [HttpPut("{id}")]
+        public ActionResult UpdateLink(int id, LinkUpdateDTO linkUpdateDTO)
+        {
+            Link link = _repository.GetLinkById(id);
+
+            if (link == null) return NotFound();
+            
+            _mapper.Map(linkUpdateDTO, link);
+            _repository.UpdateLink(link);
+            bool added = _repository.SaveChanges();
+
+            if (added) return NoContent();
+
+            return BadRequest();
+        }
     }
 }

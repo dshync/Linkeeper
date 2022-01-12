@@ -11,6 +11,7 @@ namespace Linkeeper.Data
         IEnumerable<Link> GetAllLinks();
         Link GetLinkById(int id);
         void AddLink(Link link);
+        void UpdateLink(Link link);
 
         bool SaveChanges();
     }

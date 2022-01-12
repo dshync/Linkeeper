@@ -10,6 +10,7 @@ namespace Linkeeper.Mapping
         {
             CreateMap<Link, LinkReadDTO>();
             CreateMap<LinkAddDTO, Link>();
+            CreateMap<LinkUpdateDTO, Link>();
         }
     }
 }

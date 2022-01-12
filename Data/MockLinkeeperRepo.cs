@@ -30,5 +30,10 @@ namespace Linkeeper.Data
         {
             throw new NotImplementedException();
         }
+
+        public void UpdateLink(Link link)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
