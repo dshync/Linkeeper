@@ -12,6 +12,7 @@ namespace Linkeeper.Data
         Link GetLinkById(int id);
         void AddLink(Link link);
         void UpdateLink(Link link);
+        void DeleteLink(Link link);
 
         bool SaveChanges();
     }

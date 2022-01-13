@@ -17,7 +17,8 @@ namespace Linkeeper.Data
 
         public void AddLink(Link link)
         {
-            if (link == null) throw new ArgumentNullException(nameof(link));
+            if (link == null) 
+                throw new ArgumentNullException(nameof(link));
 
             _context.Add(link);
         }
@@ -35,6 +36,14 @@ namespace Linkeeper.Data
         public void UpdateLink(Link link)
         {
             //nothing
+        }
+
+        public void DeleteLink(Link link)
+        {
+            if (link == null)
+                throw new ArgumentNullException(nameof(link));
+
+            _context.Remove(link);
         }
 
         public bool SaveChanges()

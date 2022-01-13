@@ -61,15 +61,31 @@ namespace Linkeeper.Controllers
         {
             Link link = _repository.GetLinkById(id);
 
-            if (link == null) return NotFound();
+            if (link == null) 
+                return NotFound();
             
             _mapper.Map(linkUpdateDTO, link);
             _repository.UpdateLink(link);
             bool added = _repository.SaveChanges();
 
-            if (added) return NoContent();
+            if (added) 
+                return NoContent();
 
             return BadRequest();
+        }
+
+        [HttpDelete("{id}")]
+        public ActionResult DeleteLink(int id)
+        {
+            Link link = _repository.GetLinkById(id);
+
+            if (link == null) 
+                return NotFound();
+
+            _repository.DeleteLink(link);
+            _repository.SaveChanges();
+
+            return NoContent();
         }
     }
 }
