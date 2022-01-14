@@ -1,0 +1,33 @@
+﻿@model Link
+@{
+    ViewData["Title"] = "Edit Page";
+}
+
+<form class="align-content-center" method="post" action="@Html.Raw(Model != null ? "/edit" : "/add")">
+
+    <div class="row py-1">
+        <div class="col">
+            <div class="input-group">
+                <label asp-for="Representation" class="input-group-text" id="basic-addon1">Link name</label>
+                <input asp-for="Representation" type="text" class="form-control" placeholder="@Html.Raw(Model != null ? Model.Representation : "Representation of link")" aria-label="Representation" aria-describedby="basic-addon1">
+            </div>
+        </div>
+    </div>
+    <div class="row py-1">
+        <div class="col">
+            <div class="input-group">
+                <label asp-for="Address" class="input-group-text" id="basic-addon1">Link address</label>
+                <input asp-for="Address" type="url" class="form-control" placeholder="@Html.Raw(Model != null ? Model.Address : "https://...")" aria-label="Address" aria-describedby="basic-addon1">
+                <input asp-for="Id" type="hidden" />
+                <span asp-validation-for="Address"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row py-1">
+        <div class="col">
+            <button type="submit" class="btn btn-primary">
+                @Html.Raw(Model != null ? "Edit" : "Add") link
+            </button>  
+        </div>
+    </div>
+</form>

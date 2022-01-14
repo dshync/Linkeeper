@@ -26,12 +26,29 @@ namespace Linkeeper.Migrations
                     table.PrimaryKey("PK_Links", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
+
+            PopulateDB(migrationBuilder);
+
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "Links");
+        }
+
+        private void PopulateDB(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.InsertData(
+                table: "Links",
+                columns: new[] { "Address", "Representation" },
+                values: new object[,]
+                {
+                    { "https://github.com", "GitHub" },
+                    { "https://www.deepl.com", "Translator" },
+                    { "https://colab.research.google.com", "Colab" }
+                })
+                .Annotation("MySql:CharSet", "utf8mb4"); ;
         }
     }
 }

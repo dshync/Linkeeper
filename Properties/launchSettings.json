@@ -4,7 +4,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:4525",
+      "applicationUrl": "http://localhost:4269",
       "sslPort": 0
     }
   },
@@ -19,7 +19,7 @@
     "Linkeeper": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:5000",
+      "applicationUrl": "http://localhost:4269",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

@@ -30,8 +30,8 @@ namespace Linkeeper
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            services.AddScoped<ILinkeeperRepo, MockLinkeeperRepo>();
-            //services.AddScoped<ILinkeeperRepo, MySqlLinkeeperRepo>();
+            //services.AddSingleton<ILinkeeperRepo, MockLinkeeperRepo>();
+            services.AddScoped<ILinkeeperRepo, MySqlLinkeeperRepo>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
