@@ -27,7 +27,13 @@
         <div class="col">
             <button type="submit" class="btn btn-primary">
                 @Html.Raw(Model != null ? "Edit" : "Add") link
-            </button>  
+            </button>
         </div>
     </div>
 </form>
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}

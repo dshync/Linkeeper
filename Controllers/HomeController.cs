@@ -22,7 +22,7 @@ namespace Linkeeper.Controllers
         }
 
         public IActionResult Index()
-        {
+        {            
             List<Link> links = _repository.GetAllLinks().ToList();
             return View(links);
         }

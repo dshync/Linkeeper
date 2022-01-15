@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,13 +26,15 @@ namespace Linkeeper
             services.AddDbContext<LinkeeperContext>(opt => opt.UseMySql
                 (Configuration.GetConnectionString("LinkeeperConnection"), 
                 new MySqlServerVersion(new Version(5, 7))));
-            
+            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<LinkeeperContext>();
+
             services.AddControllersWithViews();
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            //services.AddSingleton<ILinkeeperRepo, MockLinkeeperRepo>();
-            services.AddScoped<ILinkeeperRepo, MySqlLinkeeperRepo>();
+            services.AddSingleton<ILinkeeperRepo, MockLinkeeperRepo>();
+            //services.AddScoped<ILinkeeperRepo, MySqlLinkeeperRepo>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -52,6 +55,7 @@ namespace Linkeeper
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -59,6 +63,7 @@ namespace Linkeeper
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
             });
         }
     }

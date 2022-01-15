@@ -1,12 +1,10 @@
 ﻿using Linkeeper.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Linkeeper.Data
 {
-    public class LinkeeperContext : DbContext
+    public class LinkeeperContext : IdentityDbContext
     {
         public LinkeeperContext(DbContextOptions<LinkeeperContext> opt)
             :base(opt)
