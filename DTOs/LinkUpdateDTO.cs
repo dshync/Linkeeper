@@ -2,12 +2,12 @@
 
 namespace Linkeeper.DTOs
 {
-    public class LinkUpdateDTO
-    {
-        [Required]
-        public string Address { get; set; }
+	public class LinkUpdateDTO
+	{
+		[Required]
+		public string Address { get; set; }
 
-        [Required]
-        public string Representation { get; set; }
-    }
+		[Required]
+		public string Representation { get; set; }
+	}
 }

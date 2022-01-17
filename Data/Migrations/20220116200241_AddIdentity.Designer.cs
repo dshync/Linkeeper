@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Linkeeper.Migrations
 {
     [DbContext(typeof(LinkeeperContext))]
-    [Migration("20220115221201_AddIdentity")]
+    [Migration("20220116200241_AddIdentity")]
     partial class AddIdentity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
