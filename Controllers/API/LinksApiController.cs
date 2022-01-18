@@ -2,14 +2,16 @@
 using Linkeeper.Data;
 using Linkeeper.DTOs;
 using Linkeeper.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
 namespace Linkeeper.Controllers
 {
-	[Route("api/links")]
 	[ApiController]
+	[Route("api/links")]
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 	public class LinksApiController : ControllerBase
 	{
 		private readonly ILinkeeperRepo _repository;

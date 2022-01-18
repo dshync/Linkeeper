@@ -30,32 +30,32 @@ namespace Linkeeper
 			services.AddDbContext<LinkeeperContext>(options => options.UseMySql
 				(Configuration.GetConnectionString("LinkeeperConnection"), 
 				new MySqlServerVersion(new Version(5, 7))));
-			
-			services.AddDefaultIdentity<IdentityUser>(options => 
+
+			services.AddDefaultIdentity<IdentityUser>(options =>
 			{
 				options.SignIn.RequireConfirmedAccount = false;
 				options.SignIn.RequireConfirmedEmail = false;
 				options.SignIn.RequireConfirmedPhoneNumber = false;
 			})
-				.AddEntityFrameworkStores<LinkeeperContext>()
-				.AddUserManager<UserManager<IdentityUser>>();
+				.AddEntityFrameworkStores<LinkeeperContext>();
 
 			services.AddControllersWithViews();
 
 			services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 			//services.AddSingleton<ILinkeeperRepo, MockLinkeeperRepo>();
-			services.AddScoped<ILinkeeperRepo, MySqlLinkeeperRepo>();            
+			services.AddScoped<ILinkeeperRepo, MySqlLinkeeperRepo>();
 
-			/*services.AddScoped<JwtSettings>();
-			JwtSettings jwt = new JwtSettings();
-			Configuration.Bind(nameof(JwtSettings), jwt);
+			/*JwtSettings jwt = new JwtSettings();
+			Configuration.Bind(nameof(jwt), jwt);*/
+			JwtSettings jwt = new JwtSettings { Secret = Configuration["JwtSettings:Secret"] };
+			services.AddSingleton<JwtSettings>(jwt);
 
 			services.AddAuthentication(options =>
 			{
-				options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-				options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-				options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+				//options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+				//options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+				//options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 			})
 			.AddJwtBearer(options =>
 			{
@@ -69,7 +69,7 @@ namespace Linkeeper
 					RequireExpirationTime = false,
 					ValidateLifetime = true
 				};
-			});*/
+			});
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
