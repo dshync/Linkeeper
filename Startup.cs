@@ -1,18 +1,16 @@
+using AutoMapper;
+using Linkeeper.Data;
+using Linkeeper.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using Linkeeper.Data;
-using AutoMapper;
-using Linkeeper.Settings;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Text;
 
 namespace Linkeeper
 {
@@ -28,7 +26,7 @@ namespace Linkeeper
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddDbContext<LinkeeperContext>(options => options.UseMySql
-				(Configuration.GetConnectionString("LinkeeperConnection"), 
+				(Configuration.GetConnectionString("LinkeeperConnection"),
 				new MySqlServerVersion(new Version(5, 7))));
 
 			services.AddDefaultIdentity<IdentityUser>(options =>

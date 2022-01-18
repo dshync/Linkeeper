@@ -17,66 +17,99 @@ namespace Linkeeper.Controllers.API
 {
 	[ApiController]
 	[Route("api/identity")]
-    [AllowAnonymous]
 	public class IdentityApiController : ControllerBase
 	{
 		private readonly UserManager<IdentityUser> _userManager;
 		private readonly IMapper _mapper;
-        private readonly JwtSettings _jwt;
+		private readonly JwtSettings _jwt;
 
-        public IdentityApiController(UserManager<IdentityUser> userManager, IMapper mapper, JwtSettings jwt)
-        {
-            _userManager = userManager;
-            _mapper = mapper;
-            _jwt = jwt;
-        }
+		public IdentityApiController(UserManager<IdentityUser> userManager, IMapper mapper, JwtSettings jwt)
+		{
+			_userManager = userManager;
+			_mapper = mapper;
+			_jwt = jwt;
+		}
 
-        [HttpPost("register")]
-		public async Task<ActionResult<AuthenticationResultDTO>> RegisterAsync([FromBody]UserRegistrationRequestDTO requestDTO)
-        {
-            var request = _mapper.Map<UserRegistrationRequest>(requestDTO);
-            IdentityUser potentialUser = await _userManager.FindByEmailAsync(request.Email);
+		[HttpPost("register")]
+		public async Task<ActionResult<AuthenticationResultDTO>> RegisterAsync([FromBody]UserRegistrationRequestDTO registerRequestDTO)
+		{
+			var registerRequest = _mapper.Map<UserRegistrationRequest>(registerRequestDTO);
+			IdentityUser potentialUser = await _userManager.FindByEmailAsync(registerRequest.Email);
 
-            if(potentialUser != null)
-            {
-                var result = new AuthFailed { Success = false, Errors = new[] { "User with this email already exists" } };
-                return BadRequest(_mapper.Map<AuthenticationResultDTO>(result));
-            }
+			if(potentialUser != null)
+			{
+				var result = new AuthFailed { Success = false, Errors = new[] { "User with this email already exists" } };
+				return BadRequest(_mapper.Map<AuthenticationResultDTO>(result));
+			}
 
-            potentialUser = new IdentityUser { Email = request.Email, UserName = request.Email };
+			potentialUser = new IdentityUser { Email = registerRequest.Email, UserName = registerRequest.Email };
 
-            var createdUser = await _userManager.CreateAsync(potentialUser, request.Password);
+			var createdUser = await _userManager.CreateAsync(potentialUser, registerRequest.Password);
 
-            if (!createdUser.Succeeded)
-            {
-                var result = new AuthFailed { Success = false, Errors = createdUser.Errors.Select(x => x.Description).ToArray() };
-                return BadRequest(_mapper.Map<AuthenticationResultDTO>(result));
-            }
+			if (!createdUser.Succeeded)
+			{
+				var result = new AuthFailed { Success = false, Errors = createdUser.Errors.Select(x => x.Description).ToArray() };
+				return BadRequest(_mapper.Map<AuthenticationResultDTO>(result));
+			}
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_jwt.Secret);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity( new []
-                {
-                    new Claim(JwtRegisteredClaimNames.Sub, potentialUser.Email),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(JwtRegisteredClaimNames.Email, potentialUser.Email),
-                    new Claim("id", potentialUser.Id)
-                }),
-                Expires = DateTime.UtcNow.AddHours(4),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            var success = new AuthSuccess 
-            { 
-                Success = true, 
-                Token = tokenHandler.WriteToken(token) 
-            };
+			var success = new AuthSuccess
+			{
+				Success = true,
+				Token = GenerateToken(potentialUser)
+			};
 
 			return Ok(_mapper.Map<AuthenticationResultDTO>(success));
-        }
-    }
+		}
+
+		[HttpPost("login")]
+		public async Task<ActionResult<AuthenticationResultDTO>> LoginAsync([FromBody] UserLoginRequestDTO loginRequestDTO)
+		{
+			var loginRequest = _mapper.Map<UserRegistrationRequest>(loginRequestDTO);
+			IdentityUser user = await _userManager.FindByEmailAsync(loginRequest.Email);
+
+			if (user == null)
+			{
+				var result = new AuthFailed { Success = false, Errors = new[] { "User does not exists" } };
+				return BadRequest(_mapper.Map<AuthenticationResultDTO>(result));
+			};
+
+			bool passwordValid = await _userManager.CheckPasswordAsync(user, loginRequest.Password);
+
+			if (!passwordValid)
+			{
+				var result = new AuthFailed { Success = false, Errors = new[] { "Password is wrong" } };
+				return BadRequest(_mapper.Map<AuthenticationResultDTO>(result));
+			};
+
+			var success = new AuthSuccess
+			{
+				Success = true,
+				Token = GenerateToken(user)
+			};
+
+			return Ok(_mapper.Map<AuthenticationResultDTO>(success));
+		}
+
+		protected string GenerateToken(IdentityUser user)
+		{
+			var tokenHandler = new JwtSecurityTokenHandler();
+			var key = Encoding.ASCII.GetBytes(_jwt.Secret);
+			var tokenDescriptor = new SecurityTokenDescriptor
+			{
+				Subject = new ClaimsIdentity(new[]
+				{
+					new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+					new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+					new Claim(JwtRegisteredClaimNames.Email, user.Email),
+					new Claim("id", user.Id)
+				}),
+				Expires = DateTime.UtcNow.AddHours(4),
+				SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+			};
+
+			var token = tokenHandler.CreateToken(tokenDescriptor);
+
+			return tokenHandler.WriteToken(token);
+		}
+	}
 }

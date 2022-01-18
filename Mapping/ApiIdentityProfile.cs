@@ -10,6 +10,7 @@ namespace Linkeeper.Mapping
 		public ApiIdentityProfile()
 		{
 			CreateMap<UserRegistrationRequestDTO, UserRegistrationRequest>();
+			CreateMap<UserLoginRequestDTO, UserRegistrationRequest>();
 			CreateMap<AuthSuccess, AuthenticationResultDTO>();
 			CreateMap<AuthFailed, AuthenticationResultDTO>();
 		}
