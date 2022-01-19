@@ -5,6 +5,7 @@ using Linkeeper.Settings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -33,6 +34,7 @@ namespace Linkeeper.Controllers.API
 		[HttpPost("register")]
 		public async Task<ActionResult<AuthenticationResultDTO>> RegisterAsync([FromBody]UserRegistrationRequestDTO registerRequestDTO)
 		{
+
 			var registerRequest = _mapper.Map<UserRegistrationRequest>(registerRequestDTO);
 			IdentityUser potentialUser = await _userManager.FindByEmailAsync(registerRequest.Email);
 
@@ -101,7 +103,7 @@ namespace Linkeeper.Controllers.API
 					new Claim(JwtRegisteredClaimNames.Sub, user.Email),
 					new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
 					new Claim(JwtRegisteredClaimNames.Email, user.Email),
-					new Claim("id", user.Id)
+					new Claim("Id", user.Id)
 				}),
 				Expires = DateTime.UtcNow.AddHours(4),
 				SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
