@@ -3,7 +3,7 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-RequestTests.http
+Linkeeper/RequestTests.http
 
 # User-specific files
 *.rsuser
@@ -38,11 +38,11 @@ bld/
 .vs/
 
 # Bootstrap, JQuery
-wwwroot/lib/bootstrap/
-wwwroot/lib/jquery/
-wwwroot/lib/jquery-validation/
-wwwroot/lib/jquery-validation-unobtrusive/
-wwwroot/lib/vue/
+Linkeeper/wwwroot/lib/bootstrap/
+Linkeeper/wwwroot/lib/jquery/
+Linkeeper/wwwroot/lib/jquery-validation/
+Linkeeper/wwwroot/lib/jquery-validation-unobtrusive/
+Linkeeper/wwwroot/lib/vue/
 
 
 # Visual Studio 2017 auto generated files
