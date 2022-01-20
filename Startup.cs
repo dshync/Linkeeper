@@ -26,8 +26,8 @@ namespace Linkeeper
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddDbContext<LinkeeperContext>(options => options.UseMySql
-				(Configuration.GetConnectionString("LinkeeperConnection"),
-				new MySqlServerVersion(new Version(5, 7))));
+				(Configuration.GetConnectionString("LinkeeperConnection")));
+
 
 			services.AddDefaultIdentity<IdentityUser>(options =>
 			{
@@ -39,7 +39,7 @@ namespace Linkeeper
 
 			services.AddControllersWithViews();
 
-			services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+			services.AddAutoMapper(typeof(Startup));
 
 			//services.AddSingleton<ILinkeeperRepo, MockLinkeeperRepo>();
 			services.AddScoped<ILinkeeperRepo, MySqlLinkeeperRepo>();
