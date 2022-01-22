@@ -8,6 +8,7 @@ using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Linkeeper.Models;
 
 namespace Linkeeper.IntegrationTests
 {
@@ -33,9 +34,8 @@ namespace Linkeeper.IntegrationTests
                             {
                                 services.Remove(option);
                             }
-                        services.AddDbContext<LinkeeperContext>(opt => opt.UseInMemoryDatabase("TestDB"));
+                            services.AddDbContext<LinkeeperContext>(opt => opt.UseInMemoryDatabase("TestDB"));
                         }
-
                     });
                 });
 
@@ -46,6 +46,19 @@ namespace Linkeeper.IntegrationTests
         protected async Task AuthenticateAsync()
         {
             _httpTestClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", await GetJwtAsync());
+        }
+
+        protected async Task<Link> CreateLinkAsync(Link link)
+        {
+            string requestJson = JsonConvert.SerializeObject(link);
+            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(requestJson);
+            ByteArrayContent byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            var response = await _httpTestClient.PostAsync("api/link", byteContent);
+            //Link result = await response.Content.ReadJsonAsAsync<Link>();
+            //return result;
+            return link;
         }
 
         private async Task<string> GetJwtAsync()
@@ -59,14 +72,8 @@ namespace Linkeeper.IntegrationTests
 
             //sending request and returning jwt
             var response = await _httpTestClient.PostAsync("api/identity/register", byteContent);
-            AuthenticationResultDTO result = await JsonResponseToObjectAsync<AuthenticationResultDTO>(response);
+            AuthenticationResultDTO result = await response.Content.ReadJsonAsAsync<AuthenticationResultDTO>();
             return result.Token;
-        }
-
-        protected async Task<T> JsonResponseToObjectAsync<T>(HttpResponseMessage response)
-        {
-            string responseBody = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<T>(responseBody);
         }
     }
 }

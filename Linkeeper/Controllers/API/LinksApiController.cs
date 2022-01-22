@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Linkeeper.Controllers
 {
 	[ApiController]
-	[Route("api/links")]
+	[Route("api/link")]
 	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 	public class LinksApiController : ControllerBase
 	{
@@ -36,11 +36,11 @@ namespace Linkeeper.Controllers
 			IdentityUser user = await _userManager.FindByIdAsync(userId);
 
 			var links = _repository.GetAllUserLinks(user);
-			if(links == null) return Ok();
+			if (links == null) return Ok();
 			return Ok(_mapper.Map<IEnumerable<LinkReadDTO>>(links));
 		}
 
-		[HttpGet("{id}", Name = "GetLinkById")]
+		[HttpGet("{id}", Name = "GetLinkByIdAsync")]
 		public async Task<ActionResult<Link>> GetLinkByIdAsync(int id)
 		{
 			string userId = "";
@@ -49,7 +49,7 @@ namespace Linkeeper.Controllers
 
 			Link link = _repository.GetLinkById(id);
 
-			if(link != null)
+			if (link != null)
 			{
 				if (link.User == null) return StatusCode(StatusCodes.Status403Forbidden);
 				return Ok(_mapper.Map<LinkReadDTO>(link));
@@ -87,9 +87,9 @@ namespace Linkeeper.Controllers
 
 			Link link = _repository.GetLinkById(id);
 
-			if (link == null) 
+			if (link == null)
 				return NotFound();
-			
+
 			_mapper.Map(linkUpdateDTO, link);
 
 			if (link.User == null) return StatusCode(StatusCodes.Status403Forbidden);
@@ -97,7 +97,7 @@ namespace Linkeeper.Controllers
 			_repository.UpdateLink(link);
 			bool added = _repository.SaveChanges();
 
-			if (added) 
+			if (added)
 				return NoContent();
 
 			return BadRequest();
@@ -112,7 +112,7 @@ namespace Linkeeper.Controllers
 
 			Link link = _repository.GetLinkById(id);
 
-			if (link == null) 
+			if (link == null)
 				return NotFound();
 
 			if (link.User == null) return StatusCode(StatusCodes.Status403Forbidden);
