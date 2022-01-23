@@ -50,30 +50,38 @@ namespace Linkeeper.IntegrationTests
 
         protected async Task<Link> CreateLinkAsync(Link link)
         {
-            string requestJson = JsonConvert.SerializeObject(link);
-            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(requestJson);
-            ByteArrayContent byteContent = new ByteArrayContent(buffer);
-            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            ByteArrayContent byteContent = CreateJsonHttpContent(link);
 
             var response = await _httpTestClient.PostAsync("api/link", byteContent);
-            //Link result = await response.Content.ReadJsonAsAsync<Link>();
-            //return result;
-            return link;
+            Link result = await response.Content.ReadJsonAsAsync<Link>();
+            return result;
         }
 
         private async Task<string> GetJwtAsync()
         {
             //creating json registration request as ByteArrayContent(HttpContent)
             UserRegistrationRequestDTO request = new UserRegistrationRequestDTO { Email = "t@test.t", Password = "Qwerty1!" };
-            string requestJson = JsonConvert.SerializeObject(request);
-            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(requestJson);
-            ByteArrayContent byteContent = new ByteArrayContent(buffer);
-            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            ByteArrayContent byteContent = CreateJsonHttpContent(request);
 
             //sending request and returning jwt
             var response = await _httpTestClient.PostAsync("api/identity/register", byteContent);
             AuthenticationResultDTO result = await response.Content.ReadJsonAsAsync<AuthenticationResultDTO>();
             return result.Token;
+        }
+
+        //
+        // Summary:
+        //     Create HTTP content with Json body from object.
+        //
+        // Returns:
+        //     ByteArrayContent object with Content-Type: application/json.        
+        protected ByteArrayContent CreateJsonHttpContent<T>(T obj)
+        {
+            string requestJson = JsonConvert.SerializeObject(obj);
+            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(requestJson);
+            ByteArrayContent byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            return byteContent;
         }
     }
 }

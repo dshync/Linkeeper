@@ -1,18 +1,15 @@
 ﻿using FluentAssertions;
-using Linkeeper.DTOs.ApiIdentity;
 using Linkeeper.Models;
-using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace Linkeeper.IntegrationTests
 {
+	//run tests one-by-one
+	//TODO: Fix parallel execution of the tests
 	public class LinksApiControllerTests : LinkeeperIntegrationTest
 	{
 		[Fact]
@@ -37,10 +34,7 @@ namespace Linkeeper.IntegrationTests
 			// arrange
 			await AuthenticateAsync();
 			Link link = new Link { Id = 1, Address = "https://www.test.com", Representation = "Test" };
-			string requestJson = JsonConvert.SerializeObject(link);
-			byte[] buffer = System.Text.Encoding.UTF8.GetBytes(requestJson);
-			ByteArrayContent byteContent = new ByteArrayContent(buffer);
-			byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+			ByteArrayContent byteContent = CreateJsonHttpContent<Link>(link);
 
 			// act
 			var response = await _httpTestClient.PostAsync("api/link", byteContent);
@@ -70,6 +64,43 @@ namespace Linkeeper.IntegrationTests
 			response.StatusCode.Should().Be(HttpStatusCode.OK);
 			responseLink.Address.Should().Be(link.Address);
 			responseLink.Representation.Should().Be(link.Representation);
+		}
+
+		[Fact]
+		public async Task UpdateLinkAsync_ReturnsNoContent()
+		{
+			// arrange
+			await AuthenticateAsync();
+			Link tmp = await CreateLinkAsync(new Link { Id = 1, Address = "https://www.test.com", Representation = "Test" });
+			Link link = new Link { Id = tmp.Id, Address = "https://www.qwerty.com", Representation = "Qwerty" };
+			ByteArrayContent byteContent = CreateJsonHttpContent<Link>(link);
+
+			// act
+			var response = await _httpTestClient.PutAsync($"/api/link/{link.Id}", byteContent);
+			var responseCheck = await _httpTestClient.GetAsync($"/api/link/{link.Id}");
+
+			// assert
+			response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+			Link responseLink = await responseCheck.Content.ReadJsonAsAsync<Link>();
+			responseLink.Address.Should().Be(link.Address);
+			responseLink.Representation.Should().Be(link.Representation);
+		}
+		
+		[Fact]
+		public async Task DeleteLinkAsync_ReturnsNoContent()
+		{
+			// arrange
+			await AuthenticateAsync();
+			Link link = await CreateLinkAsync(new Link { Id = 1, Address = "https://www.test.com", Representation = "Test" });
+
+			// act
+			var response = await _httpTestClient.DeleteAsync($"/api/link/{link.Id}");
+			var responseCheck = await _httpTestClient.GetAsync($"/api/link/{link.Id}");
+
+			// assert
+			response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+			responseCheck.StatusCode.Should().Be(HttpStatusCode.NotFound);
 		}
 	}
 }
